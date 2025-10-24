@@ -8,7 +8,7 @@ import {
   Input,
 } from "@/components/lib";
 import { useQuery } from "@tanstack/react-query";
-
+import { useDebounce } from "use-debounce";
 import type { Currency } from "./CurrencyConverter.types";
 import { convertAmount, getCurrencies } from "./CurrencyConverter.queries";
 
@@ -16,6 +16,7 @@ export function CurrencyConverter() {
   const [fromCurrency, setFromCurrency] = useState<string>("GBP");
   const [toCurrency, setToCurrency] = useState<string>("EUR");
   const [inputAmount, setInputAmount] = useState<number>(0);
+  const [debouncedInputAmount] = useDebounce(inputAmount, 500);
 
   const { data, isPending, isError } = useQuery({
     queryKey: ["currencies"],
@@ -23,9 +24,10 @@ export function CurrencyConverter() {
   });
 
   const { data: convertedAmount } = useQuery({
-    queryKey: ["convertAmount", fromCurrency, toCurrency, inputAmount],
-    queryFn: () => convertAmount(inputAmount, fromCurrency!, toCurrency!),
-    enabled: !!fromCurrency && !!toCurrency && inputAmount > 0,
+    queryKey: ["convertAmount", fromCurrency, toCurrency, debouncedInputAmount],
+    queryFn: () =>
+      convertAmount(debouncedInputAmount, fromCurrency!, toCurrency!),
+    enabled: !!fromCurrency && !!toCurrency && debouncedInputAmount > 0,
   });
 
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +44,7 @@ export function CurrencyConverter() {
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center p-4">
       <div className="flex gap-4 mb-4">
         <Select onValueChange={(e) => setFromCurrency(e)}>
           <SelectTrigger className="w-[180px]">
@@ -74,6 +76,8 @@ export function CurrencyConverter() {
           placeholder="Amount"
           className="w-[180px]"
           onChange={(e) => handleCurrencyInput(e)}
+          pattern="0-9"
+          type="number"
         />
         <Input
           placeholder="Converted Amount"
@@ -81,7 +85,7 @@ export function CurrencyConverter() {
           value={convertedAmount ?? ""}
         />
       </div>
-    </>
+    </div>
   );
 }
 
