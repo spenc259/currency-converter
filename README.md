@@ -17,12 +17,14 @@ Create a currency conversion tool
 CURRENCY_API_KEY=yourCurrencyKey
 ```
 
+then run the install and run commands:
+
 ```bash
 npm i
 npm run dev
 ```
 
-### Improvements
+### Improvements that can be made in a revision
 
 - overall design
   - add currency symbols
