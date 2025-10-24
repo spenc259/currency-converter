@@ -13,6 +13,10 @@ Create a currency conversion tool
 - clone the repo
 - create a .env file and add the api key
 
+```
+CURRENCY_API_KEY=yourCurrencyKey
+```
+
 ```bash
 npm i
 npm run dev
